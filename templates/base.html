@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rooms & Stalls</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Material Icons CDN -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Font Awesome CDN (Optional, though Material Icons are used primarily) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom styles not covered by Tailwind or for specific overrides */
+        
+        /* This is the key for mobile sidebar to show */
+        .sidebar.active {
+            transform: translateX(0) !important; /* Force sidebar to show on mobile */
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 40; /* Below sidebar (z-index 50), above main content */
+            display: block; /* Managed by JS */
+            transition: opacity 0.3s ease; /* Smooth fade for overlay */
+        }
+        /* State for when overlay is hidden */
+        .sidebar-overlay.hidden {
+            opacity: 0;
+            pointer-events: none; /* Make it unclickable when hidden */
+        }
+
+        /* Prevent body scroll when mobile sidebar is active */
+        body.no-scroll {
+            overflow: hidden;
+        }
+
+        /* Adjusting Tailwind's default colors to match previous design more closely */
+        /* These are used as overrides, define them with --color- prefix to avoid conflicts */
+        :root {
+            --color-indigo-700: #4e73df; /* Primary Blue */
+            --color-indigo-800: #3d5fb6; /* Sidebar Hover/Active */
+            --color-indigo-200: #a9bffc; /* Sidebar Section text */
+            --color-gray-700: #5a5c69; /* General Text Color */
+            --color-gray-200: #eaecf4; /* Border/Light BG */
+            --color-red-600: #e74a3b; /* Badge Color */
+            --color-green-500: #1cc88a; /* Green Card */
+            --color-cyan-500: #36b9cc; /* Cyan Card */
+            --color-yellow-500: #f6c23e; /* Yellow Card */
+            --color-gray-300: #dddfeb; /* Card Icon Color */
+            --color-gray-100: #f8f9fc; /* Body Background */
+        }
+
+        /* Apply custom colors using Tailwind's arbitrary values or by defining them in tailwind.config.js
+           For this single-file setup, direct overrides are practical. */
+        .bg-indigo-700 { background-color: var(--color-indigo-700); }
+        .bg-indigo-800 { background-color: var(--color-indigo-800); }
+        .text-indigo-700 { color: var(--color-indigo-700); }
+        .text-indigo-200 { color: var(--color-indigo-200); }
+        .text-gray-700 { color: var(--color-gray-700); }
+        .border-indigo-700 { border-color: var(--color-indigo-700); }
+        .bg-red-600 { background-color: var(--color-red-600); }
+
+        .border-green-500 { border-color: var(--color-green-500); }
+        .text-green-500 { color: var(--color-green-500); }
+        .bg-green-500 { background-color: var(--color-green-500); }
+
+        .border-cyan-500 { border-color: var(--color-cyan-500); }
+        .text-cyan-500 { color: var(--color-cyan-500); }
+        .bg-cyan-500 { background-color: var(--color-cyan-500); }
+
+        .border-yellow-500 { border-color: var(--color-yellow-500); }
+        .text-yellow-500 { color: var(--color-yellow-500); }
+        .bg-yellow-500 { background-color: var(--color-yellow-500); }
+
+        .text-gray-300 { color: var(--color-gray-300); }
+        .bg-gray-100 { background-color: var(--color-gray-100); }
+    </style>
+     <script>
+    document.addEventListener('htmx:configRequest', (e) => {
+      const token = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      e.detail.headers['X-CSRFToken'] = token;
+    });
+
+    function openModal() {
+      document.getElementById('contact-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('contact-modal').classList.add('hidden');
+    }
+
+    // Close modal after submit if response replaces contact-list
+    document.addEventListener("htmx:afterSwap", (e) => {
+      if (e.detail.target.id === "contact-list") {
+        closeModal();
+      }
+    });
+  </script>
+    
+</head>  
+<body>
+    {% block content %}
+    <h1 class="text-2xl font-bold mb-4 text-center">{% block header %}{% endblock %}</h1>
+    {% if messages %}
+        <div class="space-y-2">
+            {% for message in messages %}
+                <div class="p-2 rounded bg-blue-100 text-sm text-blue-800">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endblock %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.querySelector('.sidebar');
+            let overlay = null; // Declare overlay variable outside to manage its state
+
+            // Function to toggle sidebar and overlay
+            const toggleSidebar = () => {
+                sidebar.classList.toggle('active'); // Toggles 'active' class on sidebar for slide animation
+                document.body.classList.toggle('no-scroll'); // Toggles 'no-scroll' class on body
+
+                if (sidebar.classList.contains('active')) {
+                    // Create overlay if it doesn't exist
+                    if (!overlay) {
+                        overlay = document.createElement('div');
+                        overlay.classList.add('sidebar-overlay');
+                        document.body.appendChild(overlay);
+
+                        // Add event listener to overlay only once
+                        overlay.addEventListener('click', () => {
+                            toggleSidebar(); // Close sidebar when overlay is clicked
+                        });
+                    }
+                    overlay.classList.remove('hidden'); // Show overlay
+                    overlay.style.opacity = '1'; // Ensure opacity for transition
+                } else {
+                    // Hide overlay if sidebar is closing
+                    if (overlay) {
+                        overlay.style.opacity = '0'; // Start fade out
+                        overlay.addEventListener('transitionend', function handler() {
+                            if (!sidebar.classList.contains('active')) { // Ensure it's still closed
+                                overlay.classList.add('hidden'); // Hide after transition
+                            }
+                            overlay.removeEventListener('transitionend', handler); // Remove listener
+                        }, { once: true }); // Ensure listener runs only once
+                    }
+                }
+            };
+
+            if (menuToggle && sidebar) {
+                menuToggle.addEventListener('click', toggleSidebar);
+
+                // Close sidebar if a navigation link is clicked (mobile only)
+                sidebar.querySelectorAll('a').forEach(item => {
+                    item.addEventListener('click', () => {
+                        // Check if sidebar is currently in active mobile state
+                        if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+                             toggleSidebar(); // Close the sidebar
+                        }
+                    });
+                });
+
+                // Close sidebar on resize if it transitions from mobile to desktop view
+                // Also ensure overlay is removed if desktop view is active
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth > 768 && sidebar.classList.contains('active')) {
+                        toggleSidebar(); // Close sidebar if desktop view
+                    }
+                    // Also ensure body scroll is re-enabled if for some reason it's stuck
+                    if (window.innerWidth > 768 && document.body.classList.contains('no-scroll')) {
+                        document.body.classList.remove('no-scroll');
+                    }
+                    // Ensure overlay is removed if we resize to desktop and it's present
+                    if (window.innerWidth > 768 && overlay) {
+                        overlay.remove();
+                        overlay = null; // Reset overlay variable
+                    }
+                });
+            }
+        });
+    </script> 
+</body>
+</html>

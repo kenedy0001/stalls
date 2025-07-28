@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile E-commerce Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        :root {
+            --primary-red: #e41f27;
+            --text-color: #333;
+            --light-grey: #f0f0f0;
+            --border-color: #ddd;
+            --star-color: #ffc107;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--light-grey);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top for mobile-like scroll */
+            min-height: 100vh;
+            padding-bottom: 60px; /* Space for fixed bottom nav */
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px; /* Typical mobile width */
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure container fills viewport for scrolling */
+            position: relative; /* For fixed elements */
+        }
+
+        /* Top Bar - Search and Categories */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff;
+        }
+
+        .search-container input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--primary-red);
+            border-radius: 5px;
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+
+        .search-container input::placeholder {
+            color: #999;
+        }
+
+        .search-button {
+            background-color: var(--primary-red);
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .categories-nav {
+            overflow-x: auto; /* Enable horizontal scrolling */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            white-space: nowrap; /* Prevent wrapping of list items */
+            padding: 0 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .categories-list {
+            list-style: none;
+            display: inline-flex; /* Allows horizontal scrolling with nowrap */
+            gap: 20px;
+        }
+
+        .category-item {
+            padding: 10px 0;
+            cursor: pointer;
+            color: var(--text-color);
+            font-weight: 500;
+            position: relative;
+            font-size: 0.95rem;
+        }
+
+        .category-item.active {
+            color: var(--primary-red);
+        }
+
+        .category-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-red);
+        }
+
+        /* Product Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two columns */
+            gap: 10px;
+            padding: 10px;
+            flex-grow: 1; /* Allow products area to take available space */
+        }
+
+        .product-card {
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 150px; /* Fixed height for consistency */
+            object-fit: cover;
+            display: block;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .product-info {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; /* Allows info section to expand */
+        }
+
+        .product-brand {
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .product-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-color);
+            line-height: 1.3;
+            margin-bottom: 5px;
+            min-height: 3em; /* Ensure consistent height for names */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* Show up to 2 lines */
+            -webkit-box-orient: vertical;
+        }
+
+        .product-specs {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .product-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-top: auto; /* Pushes price to the bottom if content above varies */
+            margin-bottom: 5px;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .product-rating .fas.fa-star.filled,
+        .product-rating .fas.fa-star-half-alt.filled {
+            color: var(--star-color);
+            margin-right: 2px;
+        }
+
+        .product-rating span {
+            margin-left: 5px;
+        }
+
+        /* Specific product styling */
+        .brand-logo {
+            width: 60px;
+            height: 20px;
+            object-fit: contain;
+            margin-bottom: 5px;
+        }
+
+        .tv-branding {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .tv-branding .small-logo {
+            width: 30px;
+            height: 15px;
+            object-fit: contain;
+        }
+
+        .frameless-tag {
+            background-color: #eee;
+            color: #555;
+            font-size: 0.7rem;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        .tv-features {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        .free-tag {
+            background-color: var(--primary-red);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: 700;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #fff;
+            border-top: 1px solid var(--border-color);
+            padding: 8px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 420px; /* Match container width */
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.7rem;
+            color: #777;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 3px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-red);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--primary-red);
+            color: #fff;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.6rem;
+            font-weight: bold;
+        }
+
+        /* Scrollbar styling for webkit browsers (optional) */
+        .categories-nav::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .categories-nav::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 2px;
+        }
+
+        .categories-nav::-webkit-scrollbar-track {
+            background-color: #f1f1f1;
+        }
+
+        /* Media Queries for larger screens (if you want it to look okay on desktop) */
+        @media (min-width: 600px) {
+            .container {
+                border-radius: 10px;
+                margin: 20px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<div>
+    {% include "home.html" %}
+</div>
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Category Tab Active State
+            const categoryItems = document.querySelectorAll('.category-item');
+            categoryItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // Remove 'active' from all items
+                    categoryItems.forEach(i => i.classList.remove('active'));
+                    // Add 'active' to the clicked item
+                    item.classList.add('active');
+
+                    // In a real application, you'd trigger a data fetch here
+                    const categoryName = item.textContent;
+                    console.log(`Category selected: ${categoryName}. Fetching products...`);
+                    // Example: updateProducts(categoryName);
+                });
+            });
+
+            // 2. Bottom Navigation Active State
+            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // Remove 'active' from all bottom nav items
+                    navItems.forEach(i => i.classList.remove('active'));
+                    // Add 'active' to the clicked item
+                    item.classList.add('active');
+
+                    const navLabel = item.querySelector('span').textContent;
+                    console.log(`Nav item clicked: ${navLabel}`);
+                    // In a real app, this would navigate to a different view or page
+                });
+            });
+
+            // 3. Simple Search Button Action (for demonstration)
+            const searchButton = document.querySelector('.search-button');
+            const searchInput = document.querySelector('.search-container input');
+
+            searchButton.addEventListener('click', () => {
+                const searchTerm = searchInput.value.trim();
+                if (searchTerm) {
+                    alert(`Searching for: "${searchTerm}"`);
+                    // In a real app, you'd send this to a search API
+                    // Example: performSearch(searchTerm);
+                } else {
+                    alert('Please enter a search term.');
+                }
+            });
+
+            // Optional: Auto-focus search input on load (if desired)
+            // searchInput.focus();
+
+            // Optional: Product card click (for demonstration)
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const productName = card.querySelector('.product-name').textContent;
+                    alert(`You clicked on: ${productName}`);
+                    // In a real app, this would navigate to a product detail page
+                    // Example: window.location.href = `/product/${productId}`;
+                });
+            });
+
+            // Function to dynamically add products (more advanced, but shows potential)
+            /*
+            function addProduct(productData) {
+                const productsGrid = document.querySelector('.products-grid');
+                const productCard = document.createElement('div');
+                productCard.classList.add('product-card');
+                productCard.innerHTML = `
+                    <img src="${productData.image}" alt="${productData.name}">
+                    <div class="product-info">
+                        ${productData.brand ? `<p class="product-brand">${productData.brand}</p>` : ''}
+                        <p class="product-name">${productData.name}</p>
+                        ${productData.specs ? `<p class="product-specs">${productData.specs}</p>` : ''}
+                        <p class="product-price">${productData.price}</p>
+                        <div class="product-rating">
+                            ${generateStars(productData.rating)}
+                            <span>(${productData.reviews})</span>
+                        </div>
+                    </div>
+                `;
+                productsGrid.appendChild(productCard);
+            }
+
+            function generateStars(rating) {
+                let starsHtml = '';
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= rating) {
+                        starsHtml += '<i class="fas fa-star filled"></i>';
+                    } else if (i - 0.5 === rating) {
+                        starsHtml += '<i class="fas fa-star-half-alt filled"></i>';
+                    } else {
+                        starsHtml += '<i class="far fa-star"></i>';
+                    }
+                }
+                return starsHtml;
+            }
+
+            // Example of adding a new product dynamically (uncomment to test)
+            // setTimeout(() => {
+            //     addProduct({
+            //         image: 'https://via.placeholder.com/150x150?text=New+Gadget',
+            //         name: 'Super New Gadget 2000 Pro',
+            //         price: 'KSh 7,500',
+            //         rating: 4.8,
+            //         reviews: 15,
+            //         brand: 'InnovateCo'
+            //     });
+            // }, 2000);
+            */
+        });
+    </script>
+</body>
+</html>

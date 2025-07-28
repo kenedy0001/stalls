@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block header %}Create an Account{% endblock %}
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="bg-white rounded-lg shadow-md p-6 max-w-lg w-full">
+    <h2 class="text-center font-semibold mb-2">Sign Up</h2>
+    <form method="post" class="space-y-4">{% csrf_token %}
+    {{ form }}
+    <button class="bg-green-500 text-white px-4 py-2 rounded">Sign Up</button>
+    </form>
+    <a href="{% url 'login' %}" class="text-sm text-blue-600">Already have an account?</a>
+  </div>
+</div> 
+{% endblock %}
+
+
+
+

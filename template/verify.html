@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Verify Account{% endblock %}
+{% block header %}Verify Your Account{% endblock %}
+{% block content %}
+<form method="post" class="space-y-4">{% csrf_token %}
+    <input type="text" name="phone_number" placeholder="Phone Number" class="w-full p-2 border rounded" required>
+    <input type="text" name="code" placeholder="Verification Code" class="w-full p-2 border rounded" required>
+    <button class="bg-purple-500 text-white px-4 py-2 rounded">Verify</button>
+</form>
+{% endblock %}

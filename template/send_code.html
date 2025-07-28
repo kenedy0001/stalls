@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Send Code{% endblock %}
+{% block header %}Request Verification Code{% endblock %}
+{% block content %}
+<form method="post" class="space-y-4">{% csrf_token %}
+    <input type="text" name="phone_number" placeholder="Phone Number" class="w-full p-2 border rounded" required>
+    <button class="bg-indigo-500 text-white px-4 py-2 rounded">Send Code</button>
+</form>
+{% endblock %}

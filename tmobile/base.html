@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Material Icons CDN -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Font Awesome CDN (Optional, though Material Icons are used primarily) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Mobile Shopping App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        /* Header */
+        .header {
+            background: #fff;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #f8f9fa;
+            border-radius: 25px;
+            padding: 12px 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 16px;
+            color: #666;
+        }
+
+        .search-btn {
+            background: #ff4757;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            background: white;
+            padding: 15px;
+            gap: 20px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .nav-tab {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-tab.active {
+            color: #ff4757;
+            border-bottom-color: #ff4757;
+        }
+
+        /* Hero Banners */
+        .hero-section {
+            padding: 20px 15px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        .hero-card {
+            min-width: 280px;
+            height: 120px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .hero-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .hero-card.flicks {
+            background: linear-gradient(135deg, #ffa726, #ff7043);
+        }
+
+        .hero-card.smart-tv {
+            background: linear-gradient(135deg, #9c27b0, #673ab7);
+        }
+
+        .hero-card.power {
+            background: linear-gradient(135deg, #26c6da, #00acc1);
+        }
+
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .hero-subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        /* Category Grid */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            padding: 20px 15px;
+        }
+
+        .category-item {
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .category-item:hover {
+            transform: scale(1.05);
+        }
+
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 10px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .category-icon.tvs { background: linear-gradient(135deg, #42a5f5, #1e88e5); }
+        .category-icon.fashion { background: linear-gradient(135deg, #ab47bc, #8e24aa); }
+        .category-icon.health { background: linear-gradient(135deg, #5c6bc0, #3f51b5); }
+        .category-icon.shoes { background: linear-gradient(135deg, #ff7043, #f4511e); }
+        .category-icon.checkin { background: linear-gradient(135deg, #ffca28, #ffc107); }
+        .category-icon.newbies { background: linear-gradient(135deg, #66bb6a, #4caf50); }
+        .category-icon.phones { background: linear-gradient(135deg, #29b6f6, #0288d1); }
+        .category-icon.kitchen { background: linear-gradient(135deg, #ffa726, #ff9800); }
+        .category-icon.appliances { background: linear-gradient(135deg, #7986cb, #5c6bc0); }
+        .category-icon.lucky { background: linear-gradient(135deg, #ef5350, #e53935); }
+
+        .category-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Flash Sale */
+        .flash-sale {
+            background: white;
+            margin: 20px 15px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .flash-header {
+            background: linear-gradient(135deg, #ff4757, #ff3742);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .flash-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .flash-timer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .timer-box {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .flash-products {
+            display: flex;
+            gap: 15px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .flash-product {
+            min-width: 120px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .flash-product:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            width: 100px;
+            height: 100px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            color: #ff4757;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 480px;
+            width: 100%;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid #e9ecef;
+            z-index: 100;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-item {
+            text-align: center;
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-item.active {
+            color: #ff4757;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .nav-label {
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .hero-section {
+                flex-direction: column;
+            }
+            
+            .hero-card {
+                min-width: 100%;
+            }
+            
+            .category-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header"> 
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="I am searching for...">
+                <button class="search-btn">🔍</button> 
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <a href="#" class="nav-tab active">ALL</a>
+            <a href="#" class="nav-tab">TVs</a>
+            <a href="#" class="nav-tab">Appliances</a>
+            <a href="#" class="nav-tab">Kitchen</a>
+            <a href="#" class="nav-tab">Home</a>
+            <a href="#" class="nav-tab">Phone</a>
+        </div>
+        
+        {% block content %} >
+            {% if messages %}
+                <div class="space-y-2">
+                    {% for message in messages %}
+                        <div class="p-2 rounded bg-blue-100 text-sm text-blue-800">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endblock %}
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <a href="#" class="nav-item active">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">📂</div>
+                <div class="nav-label">Categories</div>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">💬</div>
+                <div class="nav-label">Message</div>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">🛒</div>
+                <div class="nav-label">Cart</div>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Account</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Timer functionality
+        function updateTimer() {
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
+            
+            let hours = parseInt(hoursEl.textContent);
+            let minutes = parseInt(minutesEl.textContent);
+            let seconds = parseInt(secondsEl.textContent);
+            
+            seconds--;
+            
+            if (seconds < 0) {
+                seconds = 59;
+                minutes--;
+                
+                if (minutes < 0) {
+                    minutes = 59;
+                    hours--;
+                    
+                    if (hours < 0) {
+                        hours = 23;
+                    }
+                }
+            }
+            
+            hoursEl.textContent = hours.toString().padStart(2, '0');
+            minutesEl.textContent = minutes.toString().padStart(2, '0');
+            secondsEl.textContent = seconds.toString().padStart(2, '0');
+        }
+        
+        // Update timer every second
+        setInterval(updateTimer, 1000);
+        
+        // Tab switching
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector('.nav-tab.active').classList.remove('active');
+                this.classList.add('active');
+            });
+        });
+        
+        // Bottom navigation
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector('.bottom-nav .nav-item.active').classList.remove('active');
+                this.classList.add('active');
+            });
+        });
+        
+        // Search functionality
+        document.querySelector('.search-btn').addEventListener('click', function() {
+            const searchTerm = document.querySelector('.search-input').value;
+            if (searchTerm) {
+                alert(`Searching for: ${searchTerm}`);
+            }
+        });
+        
+        // Category clicks
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const category = this.querySelector('.category-label').textContent;
+                alert(`Browsing ${category} category`);
+            });
+        });
+        
+        // Product clicks
+        document.querySelectorAll('.flash-product').forEach(product => {
+            product.addEventListener('click', function() {
+                const price = this.querySelector('.product-price').textContent;
+                alert(`Product selected: ${price}`);
+            });
+        });
+        
+        // Hero card clicks
+        document.querySelectorAll('.hero-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const title = this.querySelector('.hero-title').textContent;
+                alert(`Viewing ${title} offers`);
+            });
+        });
+    </script>
+</body>
+</html>

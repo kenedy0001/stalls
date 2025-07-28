@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="p-6">
+<!-- Earnings (Monthly) Card -->
+    {% for room in rooms %} 
+           <div class=" m-6 mx-auto bg-white shadow-lg rounded-2xl overflow-hidden">
+                <img class="w-full h-48 object-cover" src="{{ room.image }}" alt="Room Image">
+                
+                <div class="p-4">
+                    <h2 class="text-xl font-semibold text-gray-800">{{room.name}}</h2>
+                    <p class="text-gray-600 mt-2 text-sm">{{ room.description }}                                  
+                    </p>
+                    <div class="p-6 flex space-between">
+                        {% if user.is_authenticated%}
+                        <div class="mr-12"><button type="submit" class="btn btn-primary  w-full bg-blue-600 text-white text-center py-2 px-4 rounded-xl hover:bg-blue-700 transition duration-200">Add Days</button></div>                    
+                        <div class="mr-12"><p class="text-center">1</p></div>
+                        <div class="ml-12"><button type="submit" class="btn btn-primary  w-full bg-blue-600 text-white text-center py-2 px-4 rounded-xl hover:bg-blue-700 transition duration-200">Sub Days</button></div> 
+                        {% else %}
+                        {% endif%}
+                    </div>                    
+                    <div class="mt-4">
+                         <form action="{% url 'book_room' room.id %}" method="post" class="w-full bg-blue-600 text-white text-center py-2 px-4 rounded-xl hover:bg-blue-700 transition duration-200">                                                 
+                            {% if user.is_authenticated %}
+                            {% csrf_token %}   
+                            <button type="submit" class="btn btn-primary text-center">BOOK NOW</button>
+                            {% else %}
+                            <a href="{% url 'login' %}" class="text-center">Login To Book A Room </a>
+                            {% endif %} 
+                        </button>
+                    </form> 
+                    </div>
+                </div>
+            </div>  
+    {% empty %}
+    <p>No rooms found</p>
+    {% endfor %}                    
+</section>
+{% endblock %}
